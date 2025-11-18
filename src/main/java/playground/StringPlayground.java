@@ -4,16 +4,21 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
 public class StringPlayground {
     public static void main(String[] args) throws URISyntaxException {
-        var url = "https://example.com/auth/callback?post_login_redirect=https%253A%2F%2Fapp.rqratings.dev%2F&foo=bar";
-        System.out.println(extractQueryParam(url, "post_login_redirect"));
+        var validUrl = "https://api.rqratings.dev/auth/callback?post_login_redirect=https%253A%2F%2Fapp.example.dev%2Fcompass%2Fredirect%253FreportToPrefetch%253D4973fcee-5c47-4553-a752-b7a24c10531b%2526returnUrl%253Dhttps%25253A%25252F%25252Fapp.example.dev%25252Fcompass%25252Fdashboard";
+
+        try {
+            System.out.println(extractQueryParam(validUrl, "post_login_redirect"));
+        } catch (URISyntaxException $exception) {
+            System.out.println("post_login_redirect is invalid");
+        }
+
     }
 
     private static String extractQueryParam(String url, String paramName) throws URISyntaxException {
-        var uri = new URI(URLDecoder.decode(url, StandardCharsets.UTF_8));
+        var uri = new URI(url);
         var query = uri.getQuery();
 
         for (var param : query.split("&")) {
@@ -22,7 +27,7 @@ public class StringPlayground {
             String value = keyAndValue[1];
 
             if (key.equals(paramName)) {
-                return value;
+                return URLDecoder.decode(value, StandardCharsets.UTF_8);
             }
         }
 
